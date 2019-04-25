@@ -112,7 +112,7 @@ _ : inc (x1 x1 x0 x1 nil) ≡ x0 x0 x1 x1 nil
 _ = refl
 
 to : ℕ → Bin
-to zero = nil
+to zero = x0 nil
 to (suc n) = inc (to n)
 
 _ : to 3 ≡ x1 x1 nil
