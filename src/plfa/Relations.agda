@@ -8,6 +8,7 @@ open import Data.List using (List; []; _∷_)
 open import Function using (id; _∘_)
 open import Relation.Nullary using (¬_)
 open import Data.Empty using (⊥; ⊥-elim)
+open import plfa.Induction using (Bin; nil; x0_; x1_; inc; to; from; from-to)
 
 data _≤_ : ℕ → ℕ → Set where
 
@@ -258,3 +259,109 @@ e+e≡e zero     en = en
 e+e≡e (suc om) en = suc (o+e≡o om en)
 
 o+e≡o (suc em) en = suc (e+e≡e em en)
+
+-- Exercise o+o≡e
+
+e+o≡o : ∀ {m n : ℕ}
+  → even m
+  → odd n
+    -----------
+  → odd (m + n)
+
+o+o≡e : ∀ {m n : ℕ}
+  → odd m
+  → odd n
+    ------------
+  → even (m + n)
+
+e+o≡o zero on = on
+e+o≡o (suc x) on = suc (o+o≡e x on)
+
+o+o≡e (suc x) n = suc (e+o≡o x n)
+
+-- Exercise Bin-predicates
+
+--  Predicates
+
+data One : Bin → Set where
+
+  one :
+    -------------
+    One (x1_ nil)
+
+  suc-one : ∀ {n : Bin}
+    → One n
+    ------------
+    → One (x1_ n)
+
+  suc-zero : ∀ {n : Bin}
+    → One n
+    ------------
+    → One (x0_ n)
+
+data Can : Bin → Set where
+
+  zero :
+    -----------
+    Can (x0_ nil)
+
+  from-one : ∀ {n : Bin}
+    → One n
+      -----
+    → Can n
+
+--  Prove
+
+inc-keeps-one : ∀ {x : Bin}
+  → One x
+    -----------
+  → One (inc x)
+
+inc-keeps-one one = suc-zero one
+inc-keeps-one (suc-one onex) = suc-zero (inc-keeps-one onex)
+inc-keeps-one (suc-zero onex) = suc-one onex
+
+inc-keeps : ∀ {x : Bin}
+  → Can x
+    -----------
+  → Can (inc x)
+
+inc-keeps zero = from-one one
+inc-keeps (from-one onex) = from-one (inc-keeps-one onex)
+
+to-can : ∀ {n : ℕ}
+    ----------
+  → Can (to n)
+
+to-can {zero} = zero
+to-can {suc n} = inc-keeps (to-can {n})
+
+--  - to-from
+
+to-double : ∀ {x : Bin}
+  → One x
+    ---------------------------
+  → to (2 * from x) ≡ x0 x
+
+to-double one = refl
+to-double (suc-one onex) = {!   !}
+to-double (suc-zero onex) = {!   !}
+
+-- It seems like we need a operator +-Bin to prove this lemma.
+
+to-from-one : ∀ {x : Bin}
+  → One x
+    ---------------
+  → to (from x) ≡ x
+
+to-from-one one = refl
+to-from-one (suc-one onex) = {!   !}
+to-from-one (suc-zero onex) = {!   !}
+
+to-from : ∀ {x : Bin}
+  → Can x
+    ---------------
+  → to (from x) ≡ x
+
+to-from zero = refl
+to-from (from-one onex) = to-from-one onex
