@@ -8,7 +8,7 @@ open import Data.List using (List; []; _∷_)
 open import Function using (id; _∘_)
 open import Relation.Nullary using (¬_)
 open import Data.Empty using (⊥; ⊥-elim)
-open import plfa.Induction using (Bin; nil; x0_; x1_; inc; to; from; from-to)
+open import plfa.Induction using (Bin; nil; x0_; x1_; inc; to; from; from-to; +-identityʳ)
 
 data _≤_ : ℕ → ℕ → Set where
 
@@ -287,23 +287,23 @@ data One : Bin → Set where
 
   one :
     -------------
-    One (x1_ nil)
+    One (x1 nil)
 
   suc-one : ∀ {n : Bin}
     → One n
     ------------
-    → One (x1_ n)
+    → One (x1 n)
 
   suc-zero : ∀ {n : Bin}
     → One n
     ------------
-    → One (x0_ n)
+    → One (x0 n)
 
 data Can : Bin → Set where
 
   zero :
     -----------
-    Can (x0_ nil)
+    Can (x0 nil)
 
   from-one : ∀ {n : Bin}
     → One n
@@ -338,30 +338,71 @@ to-can {suc n} = inc-keeps (to-can {n})
 
 --  - to-from
 
-to-double : ∀ {x : Bin}
-  → One x
-    ---------------------------
-  → to (2 * from x) ≡ x0 x
+-- It seems like we need a operator +-Bin to prove this.
 
-to-double one = refl
-to-double (suc-one onex) = {!   !}
-to-double (suc-zero onex) = {!   !}
+_+-Bin_ : Bin → Bin → Bin
+nil +-Bin b = b
+(x0 a) +-Bin nil = (x0 a)
+(x0 a) +-Bin (x0 b) = x0 (a +-Bin b)
+(x0 a) +-Bin (x1 b) = x1 (a +-Bin b)
+(x1 a) +-Bin nil = (x1 a)
+(x1 a) +-Bin (x0 b) = x1 (a +-Bin b)
+(x1 a) +-Bin (x1 b) = x0 (inc (a +-Bin b))
 
--- It seems like we need a operator +-Bin to prove this lemma.
++-Bin-zeroˡ : ∀ {m : Bin}
+  → Can m
+    --------------------
+  → (x0 nil) +-Bin m ≡ m
++-Bin-zeroˡ zero = refl
++-Bin-zeroˡ (from-one one) = refl
++-Bin-zeroˡ (from-one (suc-one x)) = refl
++-Bin-zeroˡ (from-one (suc-zero x)) = refl
 
-to-from-one : ∀ {x : Bin}
++-Bin-incˡ : ∀ {m n : Bin}
+  → (inc m) +-Bin n ≡ inc (m +-Bin n)
++-Bin-incˡ {nil} {nil} = refl
++-Bin-incˡ {nil} {x0 n} = refl
++-Bin-incˡ {nil} {x1 n} = refl
++-Bin-incˡ {x0 m} {nil} = refl
++-Bin-incˡ {x0 m} {x0 n} = refl
++-Bin-incˡ {x0 m} {x1 n} = refl
++-Bin-incˡ {x1 m} {nil} = refl
++-Bin-incˡ {x1 m} {x0 n} rewrite +-Bin-incˡ {m} {n} = refl
++-Bin-incˡ {x1 m} {x1 n} rewrite +-Bin-incˡ {m} {n} = refl
+
++-Bin-homomorphism : ∀ (a b : ℕ)
+  → to (a + b) ≡ (to a) +-Bin (to b)
++-Bin-homomorphism zero b rewrite +-Bin-zeroˡ (to-can {b}) = refl
++-Bin-homomorphism (suc a) b rewrite +-Bin-incˡ {to a} {to b}
+                                    | +-Bin-homomorphism a b = refl
+
++-Bin-double : ∀ (m : Bin)
+  → One m
+    ----------------
+  → m +-Bin m ≡ x0 m
++-Bin-double _ one = refl
++-Bin-double (x1 m) (suc-one onem) rewrite +-Bin-double m onem = refl
++-Bin-double (x0 m) (suc-zero onem) rewrite +-Bin-double m onem = refl
+
+to-from-one : ∀ (x : Bin)
   → One x
     ---------------
   → to (from x) ≡ x
 
-to-from-one one = refl
-to-from-one (suc-one onex) = {!   !}
-to-from-one (suc-zero onex) = {!   !}
+to-from-one _ one = refl
+to-from-one (x1 x) (suc-one onex) rewrite +-identityʳ (from x)
+                                    | +-Bin-homomorphism (from x) (from x)
+                                    | to-from-one x onex
+                                    | +-Bin-double x onex = refl
+to-from-one (x0 x) (suc-zero onex) rewrite +-identityʳ (from x)
+                                    | +-Bin-homomorphism (from x) (from x)
+                                    | to-from-one x onex
+                                    | +-Bin-double x onex = refl
 
-to-from : ∀ {x : Bin}
+to-from : ∀ (x : Bin)
   → Can x
     ---------------
   → to (from x) ≡ x
 
-to-from zero = refl
-to-from (from-one onex) = to-from-one onex
+to-from _ zero = refl
+to-from x (from-one onex) = to-from-one x onex
