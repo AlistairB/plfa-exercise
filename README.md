@@ -2,4 +2,29 @@
 
 This repo is KAAAsS's exercise of book PLFA.
 
-Generally, every codes in this repo is written by Atom and its plugin agda-mode.
+Generally, all codes in this repo is written by Atom with its plugin agda-mode.
+
+## Progress
+
+#### Part I
+
+- [x] Naturals
+- [x] Induction
+- [x] Relations
+- [x] Equality
+- [x] Isomorphism
+- [ ] Connectives
+- [ ] Negation
+- [ ] Quantifiers
+- [ ] Decidable
+- [ ] Lists
+
+#### Part II
+
+- [ ] Lambda
+- [ ] Properties
+- [ ] DeBruijn
+- [ ] More
+- [ ] Bisimulation
+- [ ] Inference
+- [ ] Untyped
