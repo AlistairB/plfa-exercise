@@ -13,8 +13,8 @@ Generally, all codes in this repo is written by Atom with its plugin agda-mode.
 - [x] Relations
 - [x] Equality
 - [x] Isomorphism
-- [ ] Connectives
-- [ ] Negation
+- [x] Connectives
+- [x] Negation
 - [ ] Quantifiers
 - [ ] Decidable
 - [ ] Lists
