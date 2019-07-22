@@ -4,29 +4,31 @@ import Relation.Binary.PropositionalEquality as Eq
 open Eq using (_≡_; refl)
 open Eq.≡-Reasoning
 open import Data.Nat using (ℕ)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (_×_; proj₁; proj₂) renaming (_,_ to ⟨_,_⟩)
 open import Function using (_∘_)
 open import plfa.Isomorphism using (_≃_; _≲_; extensionality; _⇔_)
 open plfa.Isomorphism.≃-Reasoning
 
-data _×_ (A B : Set) : Set where
-
-  ⟨_,_⟩ :
-      A
-    → B
-      -----
-    → A × B
-
-proj₁ : ∀ {A B : Set}
-  → A × B
-    -----
-  → A
-proj₁ ⟨ x , y ⟩ = x
-
-proj₂ : ∀ {A B : Set}
-  → A × B
-    -----
-  → B
-proj₂ ⟨ x , y ⟩ = y
+-- data _×_ (A B : Set) : Set where
+--
+--   ⟨_,_⟩ :
+--       A
+--     → B
+--       -----
+--     → A × B
+--
+-- proj₁ : ∀ {A B : Set}
+--   → A × B
+--     -----
+--   → A
+-- proj₁ ⟨ x , y ⟩ = x
+--
+-- proj₂ : ∀ {A B : Set}
+--   → A × B
+--     -----
+--   → B
+-- proj₂ ⟨ x , y ⟩ = y
 
 record _×′_ (A B : Set) : Set where
   field
@@ -37,7 +39,7 @@ open _×′_
 η-× : ∀ {A B : Set} (w : A × B) → ⟨ proj₁ w , proj₂ w ⟩ ≡ w
 η-× ⟨ x , y ⟩ = refl
 
-infixr 2 _×_
+-- infixr 2 _×_
 
 ×-comm : ∀ {A B : Set} → A × B ≃ B × A
 ×-comm =
@@ -99,17 +101,17 @@ T-identifyʳ {A} =
     A
   ≃-∎
 
-data _⊎_ (A B : Set) : Set where
-
-  inj₁ :
-      A
-      -----
-    → A ⊎ B
-
-  inj₂ :
-      B
-      -----
-    → A ⊎ B
+-- data _⊎_ (A B : Set) : Set where
+--
+--   inj₁ :
+--       A
+--       -----
+--     → A ⊎ B
+--
+--   inj₂ :
+--       B
+--       -----
+--     → A ⊎ B
 
 case-⊎ : ∀ {A B C : Set}
   → (A → C)
@@ -129,7 +131,7 @@ uniq-⊎ : ∀ {A B C : Set} (h : A ⊎ B → C) (w : A ⊎ B) →
 uniq-⊎ h (inj₁ x) = refl
 uniq-⊎ h (inj₂ x) = refl
 
-infix 1 _⊎_
+-- infix 1 _⊎_
 
 -- Exercise ⊎-comm
 
