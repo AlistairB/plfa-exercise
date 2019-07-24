@@ -15,7 +15,7 @@ Generally, all codes in this repo is written by Atom with its plugin agda-mode.
 - [x] Isomorphism
 - [x] Connectives
 - [x] Negation
-- [ ] Quantifiers
+- [x] Quantifiers
 - [ ] Decidable
 - [ ] Lists
 

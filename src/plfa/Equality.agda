@@ -1,9 +1,13 @@
 module plfa.Equality where
 
-data _≡_ {A : Set} (x : A) : A → Set where
-  refl : x ≡ x
+import Relation.Binary.PropositionalEquality as Eq
+open Eq using (_≡_; refl)
+open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _≤_)
 
-infix 4 _≡_
+-- data _≡_ {A : Set} (x : A) : A → Set where
+--   refl : x ≡ x
+--
+-- infix 4 _≡_
 
 sym : ∀ {A : Set} {x y : A}
   → x ≡ y
@@ -91,13 +95,13 @@ trans′ {A} {x} {y} {z} x≡y y≡z =
   ∎
 
 -- Definition
-data ℕ : Set where
-  zero : ℕ
-  suc  : ℕ → ℕ
-
-_+_ : ℕ → ℕ → ℕ
-zero    + n = n
-(suc m) + n = suc (m + n)
+-- data ℕ : Set where
+--   zero : ℕ
+--   suc  : ℕ → ℕ
+--
+-- _+_ : ℕ → ℕ → ℕ
+-- zero    + n = n
+-- (suc m) + n = suc (m + n)
 
 postulate
   +-identity : ∀ (m : ℕ) → m + zero ≡ m
@@ -125,18 +129,20 @@ postulate
 
 -- Exercise ≤-Reasoning
 
-data _≤_ : ℕ → ℕ → Set where
+-- data _≤_ : ℕ → ℕ → Set where
+--
+--   z≤n : ∀ {n : ℕ}
+--       -------------
+--     →   zero ≤ n
+--
+--   s≤s : ∀ {m n : ℕ}
+--     →     m ≤ n
+--       -------------
+--     → suc m ≤ suc n
+--
+-- infix 4 _≤_
 
-  z≤n : ∀ {n : ℕ}
-      -------------
-    →   zero ≤ n
-
-  s≤s : ∀ {m n : ℕ}
-    →     m ≤ n
-      -------------
-    → suc m ≤ suc n
-
-infix 4 _≤_
+open _≤_
 
 ≤-refl : ∀ {n : ℕ}
     -----
@@ -263,7 +269,7 @@ data odd where
       -----------
     → odd (suc n)
 
-{-# BUILTIN EQUALITY _≡_ #-}
+-- {-# BUILTIN EQUALITY _≡_ #-}
 
 even-comm : ∀ (m n : ℕ)
   → even (m + n)
