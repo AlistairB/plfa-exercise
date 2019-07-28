@@ -6,7 +6,7 @@ Generally, all codes in this repo is written by Atom with its plugin agda-mode.
 
 ## Progress
 
-#### Part I
+#### Part I (In progress)
 
 - [x] Naturals
 - [x] Induction
@@ -16,7 +16,7 @@ Generally, all codes in this repo is written by Atom with its plugin agda-mode.
 - [x] Connectives
 - [x] Negation
 - [x] Quantifiers
-- [ ] Decidable
+- [x] Decidable
 - [ ] Lists
 
 #### Part II
