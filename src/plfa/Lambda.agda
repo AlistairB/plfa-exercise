@@ -6,7 +6,8 @@ open import Data.Nat using (ℕ; zero; suc)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Relation.Nullary using (Dec; yes; no; ¬_)
 open import Data.List using (List; _∷_; [])
-open import plfa.Isomorphism using (_≲_; extensionality)
+open import Data.Product using (_×_; proj₁; proj₂) renaming (_,_ to ⟨_,_⟩)
+open import plfa.Isomorphism using (_≲_; _≃_; extensionality)
 
 Id : Set
 Id = String
@@ -325,3 +326,105 @@ data Type : Set where
   `ℕ : Type
 
 -- Quiz: 2 6
+
+infixl 5  _,_⦂_
+
+data Context : Set where
+  ∅     : Context
+  _,_⦂_ : Context → Id → Type → Context
+
+-- Exercise Context-≃
+
+Context-≃ : Context ≃ List (Id × Type)
+Context-≃ =
+  record
+    { to = to
+    ; from = from
+    ; from∘to = from∘to
+    ; to∘from = to∘from
+    }
+
+  where
+
+    to : Context → List (Id × Type)
+    to ∅ = []
+    to (Γ , var ⦂ type) = ⟨ var , type ⟩ ∷ to Γ
+
+    from : List (Id × Type) → Context
+    from [] = ∅
+    from (⟨ var , type ⟩ ∷ xs) = from xs , var ⦂ type
+
+    from∘to : ∀ (x : Context) → from (to x) ≡ x
+    from∘to ∅ = refl
+    from∘to (Γ , var ⦂ type) rewrite from∘to Γ = refl
+
+    to∘from : ∀ (y : List (Id × Type)) → to (from y) ≡ y
+    to∘from [] = refl
+    to∘from (⟨ var , type ⟩ ∷ xs) rewrite to∘from xs = refl
+
+infix  4  _∋_⦂_
+
+data _∋_⦂_ : Context → Id → Type → Set where
+
+  Z : ∀ {Γ x A}
+      ------------------
+    → Γ , x ⦂ A ∋ x ⦂ A
+
+  S : ∀ {Γ x y A B}
+    → x ≢ y
+    → Γ ∋ x ⦂ A
+      ------------------
+    → Γ , y ⦂ B ∋ x ⦂ A
+
+infix  4  _⊢_⦂_
+
+data _⊢_⦂_ : Context → Term → Type → Set where
+
+  -- Axiom
+  ⊢` : ∀ {Γ x A}
+    → Γ ∋ x ⦂ A
+      -----------
+    → Γ ⊢ ` x ⦂ A
+
+  -- ⇒-I
+  ⊢ƛ : ∀ {Γ x N A B}
+    → Γ , x ⦂ A ⊢ N ⦂ B
+      -------------------
+    → Γ ⊢ ƛ x ⇒ N ⦂ A ⇒ B
+
+  -- ⇒-E
+  _·_ : ∀ {Γ L M A B}
+    → Γ ⊢ L ⦂ A ⇒ B
+    → Γ ⊢ M ⦂ A
+      -------------
+    → Γ ⊢ L · M ⦂ B
+
+  -- ℕ-I₁
+  ⊢zero : ∀ {Γ}
+      --------------
+    → Γ ⊢ `zero ⦂ `ℕ
+
+  -- ℕ-I₂
+  ⊢suc : ∀ {Γ M}
+    → Γ ⊢ M ⦂ `ℕ
+      ---------------
+    → Γ ⊢ `suc M ⦂ `ℕ
+
+  -- ℕ-E
+  ⊢case : ∀ {Γ L M x N A}
+    → Γ ⊢ L ⦂ `ℕ
+    → Γ ⊢ M ⦂ A
+    → Γ , x ⦂ `ℕ ⊢ N ⦂ A
+      -------------------------------------
+    → Γ ⊢ case L [zero⇒ M |suc x ⇒ N ] ⦂ A
+
+  ⊢μ : ∀ {Γ x M A}
+    → Γ , x ⦂ A ⊢ M ⦂ A
+      -----------------
+    → Γ ⊢ μ x ⇒ M ⦂ A
+
+_≠_ : ∀ (x y : Id) → x ≢ y
+x ≠ y  with x ≟ y
+...       | no  x≢y  =  x≢y
+...       | yes _    =  ⊥-elim impossible
+  where postulate impossible : ⊥
