@@ -2,7 +2,7 @@ module plfa.Quantifiers where
 
 import Relation.Binary.PropositionalEquality as Eq
 open Eq using (_≡_; refl; sym; cong)
-open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; _≡⟨_⟩_; _∎)
+open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _≤_)
 open import Relation.Nullary using (¬_)
 open import Data.Product using (_×_; proj₁; proj₂; _,_) -- renaming (_,_ to ⟨_,_⟩)
